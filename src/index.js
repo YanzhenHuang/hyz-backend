@@ -27,6 +27,7 @@ app.post('/chat', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { query } = req.body;
     const dify_url = 'https://api.dify.ai/v1/chat-messages';
     const dify_api_key = process.env.DIFY_API_KEY;
+    // May not use proxy
     const proxyUrl = process.env.SYSTEM_PROXY;
     const agent = new https_proxy_agent_1.HttpsProxyAgent(proxyUrl || '');
     if (!dify_api_key) {
@@ -41,7 +42,7 @@ app.post('/chat', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
     try {
         const res_dify = yield (0, node_fetch_1.default)(dify_url, {
-            agent,
+            agent: agent,
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${dify_api_key}`,

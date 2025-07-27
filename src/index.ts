@@ -19,6 +19,8 @@ app.post('/chat', async (req: Request, res: Response) => {
 
     const dify_url = 'https://api.dify.ai/v1/chat-messages';
     const dify_api_key = process.env.DIFY_API_KEY;
+
+    // May not use proxy
     const proxyUrl = process.env.SYSTEM_PROXY;
     const agent = new HttpsProxyAgent(proxyUrl || '');
 
@@ -36,7 +38,7 @@ app.post('/chat', async (req: Request, res: Response) => {
 
     try {
         const res_dify = await fetch(dify_url, {
-            agent,
+            agent: agent,
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${dify_api_key}`,
