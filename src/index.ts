@@ -37,6 +37,7 @@ app.post('/chat', async (req: Request, res: Response) => {
     }
 
     let requestConfig: any = {
+        method: 'POST',
         headers: {
             'Authorization': `Bearer ${dify_api_key}`,
             'Content-Type': 'application/json',
