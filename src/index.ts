@@ -15,7 +15,8 @@ app.use(rateLimit({
     max: 199,
     message: 'Too many requests for my poor server QAQ'
 }));
-const port = process.env.SYSTEM_PORT;
+
+let port = parseInt(process.env.SYSTEM_PORT || '7016', 10);
 
 /**
  * Root api. Reserved for major use.
@@ -78,6 +79,8 @@ app.post('/chat', async (req: Request, res: Response) => {
         res.setHeader(header, value);
     });
 
+    res.flushHeaders();
+
     try {
         const res_dify = await fetch(dify_url, requestConfig);
 
@@ -113,6 +116,6 @@ app.post('/chat', async (req: Request, res: Response) => {
 /**
  * Listen to a standard port.
  */
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
