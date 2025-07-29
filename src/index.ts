@@ -3,13 +3,19 @@ import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config()
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-const port = 3000;
+app.use(rateLimit({
+    windowMs: 60 * 1000,
+    max: 199,
+    message: 'Too many requests for my poor server QAQ'
+}));
+const port = process.env.SYSTEM_PORT;
 
 /**
  * Root api. Reserved for major use.
@@ -31,11 +37,13 @@ app.get('/are-you-still-there', (req: Request, res: Response) => {
 app.post('/chat', async (req: Request, res: Response) => {
     const { query, conversation_id } = req.body;
 
-    const dify_url = 'https://api.dify.ai/v1/chat-messages';
+    const dify_url = process.env.DIFY_URL;
     const dify_api_key = process.env.DIFY_API_KEY;
 
-    if (!dify_api_key) {
-        return res.status(500).json({ error: 'DIFY_API_KEY not set' });
+    if (!dify_url || !dify_api_key) {
+        return res.status(500).json({ 
+            error: 'Please check dify configuration.' 
+        });
     }
 
     let requestConfig: any = {
