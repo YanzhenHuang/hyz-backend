@@ -8,6 +8,8 @@ import rateLimit from 'express-rate-limit';
 dotenv.config()
 
 const app = express();
+
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json());
 app.use(rateLimit({
@@ -22,7 +24,7 @@ let port = parseInt(process.env.SYSTEM_PORT || '7016', 10);
  * Root api. Reserved for major use.
  */
 app.get('/', (req: Request, res: Response) => {
-    res.send("Test!!!");
+    res.send("Running");
 });
 
 /**
@@ -30,6 +32,18 @@ app.get('/', (req: Request, res: Response) => {
  */
 app.get('/are-you-still-there', (req: Request, res: Response) => {
     res.send('still-alive');
+});
+
+/**
+ * Debug IP.
+ */
+app.get('/debug-ip', (req, res) => {
+  res.json({
+    ip: req.ip,                     // IP
+    ips: req.ips,                   // proxy chain
+    real_ip: req.headers['x-real-ip'],
+    forwarded_for: req.headers['x-forwarded-for']
+  });
 });
 
 /**
@@ -92,6 +106,7 @@ app.post('/chat', async (req: Request, res: Response) => {
         // Use Node.js stream event handling instead of getReader()
         stream.on('data', (chunk) => {
             res.write(chunk);
+            console.log(chunk);
         });
 
         stream.on('end', () => {
